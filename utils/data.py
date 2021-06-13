@@ -40,7 +40,31 @@ class CustomImageDataset(Dataset):
 
     def __len__(self):
         return len(self.y)
+
+class InferenceImageDataset(Dataset):
+    """Custom Dataset for loading images from paths"""
+
+    def __init__(self, img_paths, transform=None, label_names=None):
     
+        self.img_paths = img_paths
+        self.class_to_idx = {label:idx for idx, label in enumerate(label_names)}
+        self.transform = transform
+
+    def __getitem__(self, index):
+        #if torch.is_tensor(index):
+        #    idx = idx.tolist()
+            
+        img = Image.open(self.img_paths[index])
+        
+        if self.transform is not None:
+            img = self.transform(img)
+        
+        img_path = self.img_paths[index]
+        return img, img_path
+
+    def __len__(self):
+        return len(self.img_paths)
+
 def get_test_transforms(img_size: int) -> Compose:
     """Returns data transformations for test dataset.
     

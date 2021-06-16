@@ -16,13 +16,13 @@ def get_efficientnetb0(num_classes, num_channels=3):
         out_features=num_classes, 
         bias=True
         )
-    #model = models.resnet18(pretrained=True)
-    #num_ftrs = model.fc.in_features
-    #model.fc = nn.Linear(num_ftrs, num_classes)
+
     return model
 
-def get_resnet18(num_classes):
+def get_resnet18(num_classes, num_channels=3):
     model = resnet18(pretrained=True)
+    if num_channels==1:
+        model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, num_classes)
     return model

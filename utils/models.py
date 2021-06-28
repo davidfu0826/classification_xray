@@ -60,4 +60,13 @@ class EfficientNetB8(nn.Module):
     def forward(self, x):
         return self.model(x)
 
+def get_model(model_name, num_classes, input_channels, pretrained_path=None):
+    model = timm.create_model(model_name, pretrained=True, num_classes=num_classes, in_chans=input_channels)
+    
+    if pretrained_path is not None:
+        state_dict = torch.load(pretrained_path)
+        model.load_state_dict(state_dict)
+        
+    return model
+
 

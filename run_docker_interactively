@@ -1,0 +1,2 @@
+sudo docker run --rm -it --shm-size 16GB --gpus all -v /home/nvidia/Datasets/:/usr/src/app/Datasets -v /home/nvidia/Github/:/usr/src/app/Github -v /home/nvidia/temp:/usr/src/app/ -p 8888:8888 timm 
+

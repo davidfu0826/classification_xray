@@ -1,4 +1,5 @@
 notebooks/.ipynb_checkpoints/
 utils/__pycache__/
-weights/*.pt
+utils/.ipynb_checkpoints/
+weights/**/*.pt
 results/*

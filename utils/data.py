@@ -3,6 +3,7 @@ import warnings
 from typing import List
 warnings.simplefilter("ignore", FutureWarning)
 
+import cv2
 import PIL.Image as Image
 from PIL.Image import BICUBIC
 import torch
@@ -25,6 +26,7 @@ class CustomImageDataset(Dataset):
         self.y = [self.class_to_idx[label] for label in self.y]
         
         self.transform = transform
+        print(self.class_to_idx)
 
     def __getitem__(self, index):
         #if torch.is_tensor(index):
@@ -41,6 +43,37 @@ class CustomImageDataset(Dataset):
     def __len__(self):
         return len(self.y)
 
+class CustomImageDatasetV2(Dataset):
+    """Custom Dataset for loading images from paths"""
+
+    def __init__(self, img_paths, transform=None, label_names=None):
+    
+        self.img_paths = img_paths
+        self.y = [os.path.basename(os.path.dirname(img_path)) for img_path in self.img_paths]
+        self.class_to_idx = {label:idx for idx, label in enumerate(label_names)}
+        self.y = [self.class_to_idx[label] for label in self.y]
+        
+        self.transform = transform
+        print(self.class_to_idx)
+
+    def __getitem__(self, index):
+        #if torch.is_tensor(index):
+        #    idx = idx.tolist()
+            
+        image = cv2.imread(self.img_paths[index], 0)
+        if len(image.shape) > 2:
+            if image.shape[2] == 3:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        if self.transform is not None:
+            image = self.transform(image=image)["image"]
+
+        label = self.y[index]
+        return image, label
+
+    def __len__(self):
+        return len(self.y)
+    
 class InferenceImageDataset(Dataset):
     """Custom Dataset for loading images from paths"""
 
@@ -49,6 +82,7 @@ class InferenceImageDataset(Dataset):
         self.img_paths = img_paths
         self.class_to_idx = {label:idx for idx, label in enumerate(label_names)}
         self.transform = transform
+        print(self.class_to_idx)
 
     def __getitem__(self, index):
         #if torch.is_tensor(index):
@@ -65,6 +99,36 @@ class InferenceImageDataset(Dataset):
     def __len__(self):
         return len(self.img_paths)
 
+class InferenceImageDatasetV2(Dataset):
+    """Custom Dataset for loading images from paths"""
+
+    def __init__(self, img_paths, transform=None, label_names=None):
+    
+        self.img_paths = img_paths
+        self.class_to_idx = {label:idx for idx, label in enumerate(label_names)}
+        self.transform = transform
+        print(self.class_to_idx)
+
+    def __getitem__(self, index):
+        #if torch.is_tensor(index):
+        #    idx = idx.tolist()
+            
+        image = cv2.imread(self.img_paths[index], 0)
+        if len(image.shape) > 2:
+            if image.shape[2] == 3:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        if self.transform is not None:
+            image = self.transform(image=image)["image"]
+
+        
+        img_path = self.img_paths[index]
+        return image, img_path
+
+    def __len__(self):
+        return len(self.img_paths)
+
+    
 def get_test_transforms(img_size: int) -> Compose:
     """Returns data transformations for test dataset.
     
